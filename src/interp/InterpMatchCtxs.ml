@@ -560,6 +560,18 @@ module MakeMatcher (M : PrimMatcher) : Matcher = struct
             [%ldebug "mut loans: matched children values"];
             M.match_amut_loans match_rec ctx0 ctx1 v0.ty pm0 id0 av0 v1.ty pm1
               id1 av1 ty av
+        | AEndedSharedLoan (sv0, av0), AEndedSharedLoan (sv1, av1) ->
+            (* An ended shared loan only remembers the value which was shared
+               (it now behaves like a regular value): match the values and the
+               children. This happens for instance when a function returned an
+               [Option<&T>] whose region ended before a loop, while the region
+               abstraction of the call survives until the loop. *)
+            [%ldebug "ended shared loans"];
+            let sv = match_rec sv0 sv1 in
+            let av = match_arec av0 av1 in
+            [%sanity_check_recover] M.recover M.span
+              (not (value_has_borrows sv.value));
+            { value = ALoan (AEndedSharedLoan (sv, av)); ty }
         | AIgnoredMutLoan _, AIgnoredMutLoan _
         | AIgnoredSharedLoan _, AIgnoredSharedLoan _ ->
             (* Those should have been filtered when destructuring the abstractions -
