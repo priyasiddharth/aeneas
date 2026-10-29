@@ -579,6 +579,16 @@ module MakeMatcher (M : PrimMatcher) : Matcher = struct
             let proj_ty = M.match_rtys ctx0 ctx1 proj0.proj_ty proj1.proj_ty in
             M.match_aproj_loans match_rec ctx0 ctx1 v0.ty pm0 ploans0 v1.ty pm1
               ploans1 ty proj_ty
+        | ( AEndedProjLoans { proj = _; consumed = []; borrows = [] },
+            AEndedProjLoans { proj = _; consumed = []; borrows = [] } ) ->
+            (* Both loan projectors are ended and have nothing left to give
+               back: there is nothing to match. We keep the left value (the
+               [proj] field is a meta-value). This happens for instance when a
+               region abstraction which contains an ended ignored mutable
+               borrow survives until a loop (e.g., after calling [next] on a
+               temporary iterator). *)
+            [%sanity_check_recover] M.recover M.span (pm0 = pm1);
+            { v0 with ty }
         | _ -> [%craise_recover] M.recover M.span "Unreachable"
       end
     | _ ->
