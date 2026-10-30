@@ -145,11 +145,11 @@ def test_wrap_lt : Result Unit := do
   let b1 ←
     core.cmp.PartialOrd.lt.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       2#u64
-  massert (¬ b1)
+  massert (! b1)
   let b2 ←
     core.cmp.PartialOrd.lt.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       1#u64
-  massert (¬ b2)
+  massert (! b2)
 
 /- Unit test for [order::test_wrap_lt] -/
 #guard (test_wrap_lt).reducesTo ()
@@ -169,7 +169,7 @@ def test_wrap_le : Result Unit := do
   let b2 ←
     core.cmp.PartialOrd.le.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       1#u64
-  massert (¬ b2)
+  massert (! b2)
 
 /- Unit test for [order::test_wrap_le] -/
 #guard (test_wrap_le).reducesTo ()
@@ -185,11 +185,11 @@ def test_wrap_gt : Result Unit := do
   let b1 ←
     core.cmp.PartialOrd.gt.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       2#u64
-  massert (¬ b1)
+  massert (! b1)
   let b2 ←
     core.cmp.PartialOrd.gt.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 1#u64
       2#u64
-  massert (¬ b2)
+  massert (! b2)
 
 /- Unit test for [order::test_wrap_gt] -/
 #guard (test_wrap_gt).reducesTo ()
@@ -209,7 +209,7 @@ def test_wrap_ge : Result Unit := do
   let b2 ←
     core.cmp.PartialOrd.ge.trait_default Wrap.Insts.CoreCmpPartialOrdWrap 1#u64
       2#u64
-  massert (¬ b2)
+  massert (! b2)
 
 /- Unit test for [order::test_wrap_ge] -/
 #guard (test_wrap_ge).reducesTo ()
@@ -361,11 +361,11 @@ def test_rank_lt : Result Unit := do
   let b1 ←
     core.cmp.PartialOrd.lt.trait_default Rank.Insts.CoreCmpPartialOrdRank
       Rank.Mid Rank.Mid
-  massert (¬ b1)
+  massert (! b1)
   let b2 ←
     core.cmp.PartialOrd.lt.trait_default Rank.Insts.CoreCmpPartialOrdRank
       Rank.High Rank.Low
-  massert (¬ b2)
+  massert (! b2)
 
 /- Unit test for [order::test_rank_lt] -/
 #guard (test_rank_lt).reducesTo ()
@@ -428,23 +428,23 @@ def test_num_incomparable : Result Unit := do
   let b ←
     core.cmp.PartialOrd.lt.trait_default Num.Insts.CoreCmpPartialOrdNum Num.Nan
       (Num.Val 1#u8)
-  massert (¬ b)
+  massert (! b)
   let b1 ←
     core.cmp.PartialOrd.le.trait_default Num.Insts.CoreCmpPartialOrdNum Num.Nan
       (Num.Val 1#u8)
-  massert (¬ b1)
+  massert (! b1)
   let b2 ←
     core.cmp.PartialOrd.gt.trait_default Num.Insts.CoreCmpPartialOrdNum Num.Nan
       (Num.Val 1#u8)
-  massert (¬ b2)
+  massert (! b2)
   let b3 ←
     core.cmp.PartialOrd.ge.trait_default Num.Insts.CoreCmpPartialOrdNum Num.Nan
       (Num.Val 1#u8)
-  massert (¬ b3)
+  massert (! b3)
   let b4 ←
     core.cmp.PartialOrd.le.trait_default Num.Insts.CoreCmpPartialOrdNum Num.Nan
       Num.Nan
-  massert (¬ b4)
+  massert (! b4)
 
 /- Unit test for [order::test_num_incomparable] -/
 #guard (test_num_incomparable).reducesTo ()
@@ -460,7 +460,7 @@ def test_wrap_ref_lt : Result Unit := do
   let b1 ←
     core.cmp.impls.PartialOrdShared.lt Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       1#u64
-  massert (¬ b1)
+  massert (! b1)
 
 /- Unit test for [order::test_wrap_ref_lt] -/
 #guard (test_wrap_ref_lt).reducesTo ()
@@ -476,7 +476,7 @@ def test_wrap_ref_le : Result Unit := do
   let b1 ←
     core.cmp.impls.PartialOrdShared.le Wrap.Insts.CoreCmpPartialOrdWrap 2#u64
       1#u64
-  massert (¬ b1)
+  massert (! b1)
 
 /- Unit test for [order::test_wrap_ref_le] -/
 #guard (test_wrap_ref_le).reducesTo ()
@@ -492,7 +492,7 @@ def test_wrap_ref_gt : Result Unit := do
   let b1 ←
     core.cmp.impls.PartialOrdShared.gt Wrap.Insts.CoreCmpPartialOrdWrap 1#u64
       2#u64
-  massert (¬ b1)
+  massert (! b1)
 
 /- Unit test for [order::test_wrap_ref_gt] -/
 #guard (test_wrap_ref_gt).reducesTo ()
@@ -508,7 +508,7 @@ def test_wrap_ref_ge : Result Unit := do
   let b1 ←
     core.cmp.impls.PartialOrdShared.ge Wrap.Insts.CoreCmpPartialOrdWrap 1#u64
       2#u64
-  massert (¬ b1)
+  massert (! b1)
 
 /- Unit test for [order::test_wrap_ref_ge] -/
 #guard (test_wrap_ref_ge).reducesTo ()

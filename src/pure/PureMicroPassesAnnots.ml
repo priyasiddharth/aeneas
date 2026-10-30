@@ -78,8 +78,16 @@ let add_type_annotations_to_fun_decl (trans_ctx : trans_ctx)
         let next = visit ty next in
         { e with e = Let (monadic, pat, bound, next) }
     | Switch (discr, body) ->
-        (* We consider that the type of the discriminant is unknown *)
-        let discr = visit hole discr in
+        (* The discriminant of an [if] is a boolean (the type is known): this
+           matters for Lean, where a comparison in that position must not
+           receive a [Bool] annotation. For a [match] we consider that the type
+           of the discriminant is unknown. *)
+        let discr_ty =
+          match body with
+          | If _ -> TLiteral TBool
+          | Match _ -> hole
+        in
+        let discr = visit discr_ty discr in
         let body = visit_switch_body ty body in
         { e with e = Switch (discr, body) }
     | Loop _ ->
@@ -306,7 +314,23 @@ let add_type_annotations_to_fun_decl (trans_ctx : trans_ctx)
                   | Not _ | Neg _ | Cast _ | ArrayToSlice ->
                       (known_f_ty, known_args_tys, false)
                 end
-              | Binop _ -> (known_f_ty, known_args_tys, false)
+              | Binop binop ->
+                  (* Lean: the comparisons [=], [≠], [<], [<=], [>=], [>]
+                     produce a [Prop]. When the expected type is known (an
+                     [if] condition, a function output), Lean coerces the
+                     [Prop] to a [Bool] with [decide]; when it is not (the
+                     bound expression of a [let]: see issue #1279), Lean
+                     infers [Prop] and the output does not type-check. We
+                     add a [Bool] annotation in that case. *)
+                  let is_comparison =
+                    match binop with
+                    | Eq _ | Ne _ | Lt _ | Le _ | Ge _ | Gt _ -> true
+                    | _ -> false
+                  in
+                  let need_annot =
+                    Config.backend () = Lean && is_comparison && ty = hole
+                  in
+                  (known_f_ty, known_args_tys, need_annot)
             end
           | Global _ -> (f.ty, mk_known (), false)
           | AdtCons adt_cons_id -> begin
